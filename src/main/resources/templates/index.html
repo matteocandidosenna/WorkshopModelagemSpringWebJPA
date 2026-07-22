@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkshopModelagem</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --background: #f5f7fa;
+            --surface: #ffffff;
+            --surface-muted: #eef2f6;
+            --border: #d9e0e7;
+            --text: #20252b;
+            --muted: #66717f;
+            --primary: #1f6feb;
+            --primary-hover: #185abc;
+            --success: #1f7a4d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.5;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar,
+        .layout {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px 0;
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+
+        .brand p {
+            margin: 2px 0 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 36px;
+            padding: 0 12px;
+            border: 1px solid #b9dfc9;
+            border-radius: 6px;
+            background: #edf8f1;
+            color: var(--success);
+            font-size: 0.9rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(300px, 380px) 1fr;
+            gap: 24px;
+            padding: 28px 0;
+            align-items: start;
+        }
+
+        .sidebar {
+            display: grid;
+            gap: 16px;
+        }
+
+        section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .panel-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .panel-header p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        form {
+            display: grid;
+            gap: 16px;
+            padding: 20px;
+        }
+
+        label {
+            display: grid;
+            gap: 6px;
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        input {
+            width: 100%;
+            min-height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 12px;
+            color: var(--text);
+            font: inherit;
+            background: #ffffff;
+        }
+
+        input:focus {
+            outline: 3px solid #cfe0ff;
+            border-color: var(--primary);
+        }
+
+        button {
+            min-height: 42px;
+            border: 0;
+            border-radius: 6px;
+            background: var(--primary);
+            color: #ffffff;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        .rule {
+            margin: 0 20px 20px;
+            padding: 12px;
+            border-radius: 6px;
+            background: var(--surface-muted);
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .concepts,
+        .trace {
+            display: grid;
+            gap: 10px;
+            padding: 18px 20px 20px;
+            margin: 0;
+            list-style: none;
+        }
+
+        .concepts li,
+        .trace li {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fbfcfe;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .trace li {
+            border-color: #b9dfc9;
+            background: #f2fbf5;
+            color: #285d43;
+        }
+
+        .created {
+            margin-bottom: 24px;
+            border-color: #b9dfc9;
+        }
+
+        .created .panel-header {
+            background: #f2fbf5;
+        }
+
+        .created-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 16px 20px 0;
+        }
+
+        .created-summary div {
+            padding: 12px;
+            border-radius: 6px;
+            background: var(--surface-muted);
+        }
+
+        .created-summary span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .created-summary strong {
+            display: block;
+            margin-top: 2px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 820px;
+        }
+
+        th,
+        td {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        th {
+            color: var(--muted);
+            background: #fafbfc;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 0.95rem;
+        }
+
+        .empty {
+            padding: 36px 20px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .api {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 16px 20px 20px;
+        }
+
+        code {
+            display: inline-flex;
+            align-items: center;
+            min-height: 32px;
+            padding: 0 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #f8fafc;
+            color: #354052;
+        }
+
+        @media (max-width: 760px) {
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+                width: min(100% - 20px, 1120px);
+                padding-top: 16px;
+            }
+
+            .created-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="topbar">
+            <div class="brand">
+                <h1>WorkshopModelagem</h1>
+                <p>Cadastro e consulta de pedidos</p>
+            </div>
+            <span class="status">Thymeleaf ativo</span>
+        </div>
+    </header>
+
+    <main class="layout">
+        <div class="sidebar">
+            <section aria-labelledby="novo-pedido">
+                <div class="panel-header">
+                    <h2 id="novo-pedido">Novo pedido</h2>
+                    <p>Cadastre um pedido com item para demonstrar o agregado.</p>
+                </div>
+
+                <form action="/pedidos/novo" method="post">
+                    <label>
+                        Cliente
+                        <input type="text" name="cliente" placeholder="Nome do cliente" required>
+                    </label>
+
+                    <label>
+                        Produto
+                        <input type="text" name="produto" placeholder="Ex: Teclado mecanico" required>
+                    </label>
+
+                    <label>
+                        Quantidade
+                        <input type="number" name="quantidade" placeholder="1" min="1" step="1" required>
+                    </label>
+
+                    <label>
+                        Valor unitario
+                        <input type="number" name="valorUnitario" placeholder="0,00" min="0" step="0.01" required>
+                    </label>
+
+                    <button type="submit">Salvar pedido</button>
+                </form>
+
+                <p class="rule">Pedidos com valor bruto acima de R$ 100 recebem 10% de desconto pelo servico de dominio.</p>
+            </section>
+
+            <section aria-labelledby="conceitos-ddd">
+                <div class="panel-header">
+                    <h2 id="conceitos-ddd">DDD tatico no exemplo</h2>
+                    <p>Os objetos aparecem no cadastro e no fluxo apos salvar.</p>
+                </div>
+
+                <ul class="concepts">
+                    <li th:each="conceito : ${conceitosDdd}" th:text="${conceito}">Conceito DDD</li>
+                </ul>
+            </section>
+        </div>
+
+        <div>
+            <section class="created" aria-labelledby="fluxo-ddd" th:if="${fluxoDdd != null}">
+                <div class="panel-header">
+                    <h2 id="fluxo-ddd">Fluxo DDD do ultimo cadastro</h2>
+                    <p>Veja como cada objeto atuou ate o pedido ser persistido.</p>
+                </div>
+
+                <div class="created-summary" th:if="${pedidoCriado != null}">
+                    <div>
+                        <span>Pedido</span>
+                        <strong th:text="'#' + ${pedidoCriado.id}">#1</strong>
+                    </div>
+                    <div>
+                        <span>Bruto</span>
+                        <strong th:text="${#numbers.formatCurrency(pedidoCriado.valorBruto)}">R$ 0,00</strong>
+                    </div>
+                    <div>
+                        <span>Desconto</span>
+                        <strong th:text="${#numbers.formatCurrency(pedidoCriado.desconto)}">R$ 0,00</strong>
+                    </div>
+                    <div>
+                        <span>Final</span>
+                        <strong th:text="${#numbers.formatCurrency(pedidoCriado.valorFinal)}">R$ 0,00</strong>
+                    </div>
+                </div>
+
+                <ol class="trace">
+                    <li th:each="passo : ${fluxoDdd}" th:text="${passo}">Passo do fluxo</li>
+                </ol>
+            </section>
+
+            <section aria-labelledby="lista-pedidos">
+                <div class="panel-header">
+                    <h2 id="lista-pedidos">Pedidos cadastrados</h2>
+                    <p th:text="${#lists.size(pedidos)} + ' pedido(s) encontrado(s)'">0 pedido(s) encontrado(s)</p>
+                </div>
+
+                <div class="table-wrap" th:if="${!#lists.isEmpty(pedidos)}">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Produto</th>
+                                <th>Qtd.</th>
+                                <th>Bruto</th>
+                                <th>Desconto</th>
+                                <th>Final</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="pedido : ${pedidos}">
+                                <td th:text="${pedido.id}">1</td>
+                                <td th:text="${pedido.cliente}">Cliente</td>
+                                <td th:text="${pedido.itens[0].produto}">Produto</td>
+                                <td th:text="${pedido.itens[0].quantidade}">1</td>
+                                <td th:text="${#numbers.formatCurrency(pedido.valorBruto)}">R$ 0,00</td>
+                                <td th:text="${#numbers.formatCurrency(pedido.desconto)}">R$ 0,00</td>
+                                <td th:text="${#numbers.formatCurrency(pedido.valorFinal)}">R$ 0,00</td>
+                                <td th:text="${pedido.status}">CRIADO</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="empty" th:if="${#lists.isEmpty(pedidos)}">Nenhum pedido cadastrado ainda.</p>
+
+                <div class="api" aria-label="Rotas da API">
+                    <code>GET /api/pedidos</code>
+                    <code>POST /api/pedidos</code>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>
