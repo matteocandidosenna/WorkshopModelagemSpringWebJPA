@@ -7,15 +7,20 @@
     <style>
         :root {
             color-scheme: light;
-            --background: #f5f7fa;
-            --surface: #ffffff;
-            --surface-muted: #eef2f6;
-            --border: #d9e0e7;
-            --text: #20252b;
-            --muted: #66717f;
-            --primary: #1f6feb;
-            --primary-hover: #185abc;
-            --success: #1f7a4d;
+            --background: #f7ead5;
+            --surface: #fffaf1;
+            --surface-muted: #ead7b8;
+            --border: #d8c3a4;
+            --text: #263021;
+            --muted: #687b60;
+            --primary: #bf4447;
+            --primary-hover: #9f3539;
+            --success: #5f7a57;
+            --success-soft: #e9efe4;
+            --success-border: #9bb28f;
+            --table-head: #f1e1c6;
+            --focus: #e3a3a0;
+            --surface-raised: #fffdf8;
         }
 
         * {
@@ -27,7 +32,7 @@
             min-height: 100vh;
             background: var(--background);
             color: var(--text);
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: Georgia, "Times New Roman", serif;
             line-height: 1.5;
         }
 
@@ -68,9 +73,9 @@
             gap: 8px;
             min-height: 36px;
             padding: 0 12px;
-            border: 1px solid #b9dfc9;
+            border: 1px solid var(--success-border);
             border-radius: 6px;
-            background: #edf8f1;
+            background: var(--success-soft);
             color: var(--success);
             font-size: 0.9rem;
             font-weight: 700;
@@ -88,6 +93,14 @@
         .sidebar {
             display: grid;
             gap: 16px;
+        }
+
+        .main-content {
+            min-width: 0;
+        }
+
+        .concept-section {
+            grid-column: 1 / -1;
         }
 
         section {
@@ -134,11 +147,11 @@
             padding: 10px 12px;
             color: var(--text);
             font: inherit;
-            background: #ffffff;
+            background: var(--surface-raised);
         }
 
         input:focus {
-            outline: 3px solid #cfe0ff;
+            outline: 3px solid var(--focus);
             border-color: var(--primary);
         }
 
@@ -155,6 +168,99 @@
 
         button:hover {
             background: var(--primary-hover);
+        }
+
+        .flow-toggle-input {
+            position: fixed;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .flow-action {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+        }
+
+        .flow-button,
+        .flow-close {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .flow-button {
+            padding: 0 14px;
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .flow-button:hover {
+            background: var(--primary-hover);
+        }
+
+        .flow-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            background: rgba(23, 31, 42, 0.36);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 180ms ease;
+        }
+
+        .flow-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 30;
+            width: min(420px, 100%);
+            height: 100vh;
+            overflow-y: auto;
+            border: 0;
+            border-left: 1px solid var(--border);
+            border-radius: 0;
+            box-shadow: -20px 0 40px rgba(32, 37, 43, 0.16);
+            transform: translateX(100%);
+            transition: transform 220ms ease;
+        }
+
+        .flow-drawer .panel-header {
+            position: relative;
+            padding-right: 64px;
+        }
+
+        .flow-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            width: 36px;
+            min-height: 36px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        .flow-close:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .flow-toggle-input:checked ~ .flow-overlay {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .flow-toggle-input:checked ~ .flow-drawer {
+            transform: translateX(0);
         }
 
         .rule {
@@ -175,29 +281,32 @@
             list-style: none;
         }
 
+        .concepts {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
         .concepts li,
         .trace li {
             padding: 12px;
             border: 1px solid var(--border);
             border-radius: 6px;
-            background: #fbfcfe;
+            background: var(--surface-raised);
             color: var(--muted);
             font-size: 0.9rem;
         }
 
         .trace li {
-            border-color: #b9dfc9;
-            background: #f2fbf5;
-            color: #285d43;
+            border-color: var(--success-border);
+            background: var(--success-soft);
+            color: #425f39;
         }
 
         .created {
-            margin-bottom: 24px;
-            border-color: #b9dfc9;
+            border-color: var(--success-border);
         }
 
         .created .panel-header {
-            background: #f2fbf5;
+            background: var(--success-soft);
         }
 
         .created-summary {
@@ -227,7 +336,9 @@
         }
 
         .table-wrap {
+            max-height: 460px;
             overflow-x: auto;
+            overflow-y: auto;
         }
 
         table {
@@ -244,8 +355,11 @@
         }
 
         th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
             color: var(--muted);
-            background: #fafbfc;
+            background: var(--table-head);
             font-size: 0.82rem;
             text-transform: uppercase;
         }
@@ -274,8 +388,8 @@
             padding: 0 10px;
             border: 1px solid var(--border);
             border-radius: 6px;
-            background: #f8fafc;
-            color: #354052;
+            background: var(--surface);
+            color: var(--text);
         }
 
         @media (max-width: 760px) {
@@ -293,6 +407,14 @@
             .created-summary {
                 grid-template-columns: 1fr;
             }
+
+            .flow-action {
+                justify-content: stretch;
+            }
+
+            .flow-button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -300,7 +422,7 @@
     <header>
         <div class="topbar">
             <div class="brand">
-                <h1>WorkshopModelagem</h1>
+                <h1>Workshop Modelagem: DDD Tático com Spring e JPA</h1>
                 <p>Cadastro e consulta de pedidos</p>
             </div>
             <span class="status">Thymeleaf ativo</span>
@@ -315,7 +437,7 @@
                     <p>Cadastre um pedido com item para demonstrar o agregado.</p>
                 </div>
 
-                <form action="/pedidos/novo" method="post">
+                <form action="#" th:action="@{/pedidos/novo}" method="post">
                     <label>
                         Cliente
                         <input type="text" name="cliente" placeholder="Nome do cliente" required>
@@ -342,23 +464,22 @@
                 <p class="rule">Pedidos com valor bruto acima de R$ 100 recebem 10% de desconto pelo servico de dominio.</p>
             </section>
 
-            <section aria-labelledby="conceitos-ddd">
-                <div class="panel-header">
-                    <h2 id="conceitos-ddd">DDD tatico no exemplo</h2>
-                    <p>Os objetos aparecem no cadastro e no fluxo apos salvar.</p>
-                </div>
-
-                <ul class="concepts">
-                    <li th:each="conceito : ${conceitosDdd}" th:text="${conceito}">Conceito DDD</li>
-                </ul>
-            </section>
         </div>
 
-        <div>
-            <section class="created" aria-labelledby="fluxo-ddd" th:if="${fluxoDdd != null}">
+        <div class="main-content">
+            <input class="flow-toggle-input" type="checkbox" id="flow-toggle" th:if="${fluxoDdd != null}">
+
+            <div class="flow-action" th:if="${fluxoDdd != null}">
+                <label class="flow-button" for="flow-toggle">Ver fluxo DDD</label>
+            </div>
+
+            <label class="flow-overlay" for="flow-toggle" aria-label="Fechar fluxo DDD" th:if="${fluxoDdd != null}"></label>
+
+            <section class="created flow-drawer" aria-labelledby="fluxo-ddd" th:if="${fluxoDdd != null}">
                 <div class="panel-header">
-                    <h2 id="fluxo-ddd">Fluxo DDD do ultimo cadastro</h2>
+                    <h2 id="fluxo-ddd">Fluxo DDD tático do ultimo cadastro</h2>
                     <p>Veja como cada objeto atuou ate o pedido ser persistido.</p>
+                    <label class="flow-close" for="flow-toggle" aria-label="Fechar fluxo DDD">&times;</label>
                 </div>
 
                 <div class="created-summary" th:if="${pedidoCriado != null}">
@@ -428,6 +549,17 @@
                 </div>
             </section>
         </div>
+
+        <section class="concept-section" aria-labelledby="conceitos-ddd">
+            <div class="panel-header">
+                <h2 id="conceitos-ddd">DDD tatico no exemplo</h2>
+                <p>Os objetos aparecem no cadastro e no fluxo apos salvar.</p>
+            </div>
+
+            <ul class="concepts">
+                <li th:each="conceito : ${conceitosDdd}" th:text="${conceito}">Conceito DDD</li>
+            </ul>
+        </section>
     </main>
 </body>
 </html>
